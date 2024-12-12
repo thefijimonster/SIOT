@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Data & Live Feed</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .plot-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        #weather-attributes, #granularity-selector, #cloud-cover {
+            margin-top: 20px;
+        }
+        #video-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weather Data and Live Video Feed</h1>
+    
+    <!-- Video Feed -->
+    <div id="video-container">
+        <h3>Live Camera Feed</h3>
+        <img src="{{ url_for('video_feed') }}" alt="Live Video Feed">
+    </div>
+
+    <!-- Weather Plot -->
+    <div class="plot-container">
+        <img src="data:image/png;base64, {{ plot_url }}" alt="Weather Plot">
+    </div>
+
+    <!-- Controls -->
+    <div id="weather-attributes">
+        <label for="attributes">Select Attribute: </label>
+        <select id="attributes" onchange="changeAttribute()">
+            <option value="temperature" {% if default_attribute == 'temperature' %}selected{% endif %}>Temperature</option>
+            <option value="humidity" {% if default_attribute == 'humidity' %}selected{% endif %}>Humidity</option>
+            <option value="wind_gust" {% if default_attribute == 'wind_gust' %}selected{% endif %}>Wind Gust</option>
+            <option value="precipitation" {% if default_attribute == 'precipitation' %}selected{% endif %}>Precipitation</option>
+            <option value="cloud_cover" {% if default_attribute == 'cloud_cover' %}selected{% endif %}>Cloud Cover</option>
+        </select>
+    </div>
+
+    <div id="granularity-selector">
+        <label for="granularity">Select Granularity: </label>
+        <select id="granularity" onchange="changeGranularity()">
+            <option value="minute" {% if granularity == 'minute' %}selected{% endif %}>Per Minute</option>
+            <option value="hour" {% if granularity == 'hour' %}selected{% endif %}>Per Hour</option>
+            <option value="day" {% if granularity == 'day' %}selected{% endif %}>Per Day</option>
+        </select>
+    </div>
+
+    <div id="cloud-cover">
+        <label for="cloud_cover">Cloud Cover: </label>
+        <input type="range" id="cloud_cover" name="cloud_cover" min="0" max="100" value="{{ cloud_cover }}" onchange="updateCloudCover()">
+        <span id="cloud_cover_value">{{ cloud_cover }}</span> %
+    </div>
+
+    <script>
+        function changeAttribute() {
+            const selectedAttribute = document.getElementById('attributes').value;
+            const granularity = document.getElementById('granularity').value;
+            const cloudCover = document.getElementById('cloud_cover').value;
+            window.location.href = `/?granularity=${granularity}&cloud_cover=${cloudCover}`;
+        }
+
+        function changeGranularity() {
+            const selectedGranularity = document.getElementById('granularity').value;
+            const attribute = document.getElementById('attributes').value;
+            const cloudCover = document.getElementById('cloud_cover').value;
+            window.location.href = `/?granularity=${selectedGranularity}&cloud_cover=${cloudCover}`;
+        }
+
+        function updateCloudCover() {
+            const cloudCover = document.getElementById('cloud_cover').value;
+            document.getElementById('cloud_cover_value').innerText = cloudCover;
+            const granularity = document.getElementById('granularity').value;
+            const attribute = document.getElementById('attributes').value;
+            window.location.href = `/?granularity=${granularity}&cloud_cover=${cloudCover}`;
+        }
+    </script>
+</body>
+</html>
+

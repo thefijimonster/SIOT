@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Capture</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+<h1>Capture Images for Dataset</h1>
+
+<!-- Buttons to start and stop the session -->
+<button id="start-session" onclick="startSession()">Start Session</button>
+<button id="stop-session" onclick="stopSession()">Stop Session</button>
+
+<!-- Buttons to capture sitting-down and standing-up images -->
+<button id="capture-sitting" onclick="captureImage('sitting_down')">Capture Sitting Down</button>
+<button id="capture-standing" onclick="captureImage('standing_up')">Capture Standing Up</button>
+
+<!-- Message display -->
+<div id="message"></div>
+
+<script>
+    function startSession() {
+        $.post('/start_session', function(data) {
+            $('#message').text(data.message);
+        });
+    }
+
+    function stopSession() {
+        $.post('/stop_session', function(data) {
+            $('#message').text(data.message);
+        });
+    }
+
+    function captureImage(label) {
+        $.post(`/capture/${label}`, function(data) {
+            $('#message').text(data.message);
+        }).fail(function(xhr, status, error) {
+            $('#message').text(xhr.responseJSON.error);
+        });
+    }
+</script>
+
+</body>
+</html>
+
